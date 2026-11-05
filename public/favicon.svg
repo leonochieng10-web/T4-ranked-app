@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="ballGlow" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="35%" stop-color="#f59e0b" />
+      <stop offset="80%" stop-color="#ea580c" />
+      <stop offset="100%" stop-color="#b45309" />
+    </radialGradient>
+    <radialGradient id="rim" cx="50%" cy="50%" r="50%">
+      <stop offset="88%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#78350f" />
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#ea580c" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="#090d16" />
+  
+  <!-- Outer glowing aura -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#f59e0b" stroke-width="4" opacity="0.4" />
+  <circle cx="256" cy="256" r="190" fill="url(#ballGlow)" stroke="#fef08a" stroke-width="6" filter="url(#shadow)" />
+
+  <!-- 4 Crimson Stars (The 4-Star Ball) -->
+  <g fill="#dc2626" stroke="#991b1b" stroke-width="1.5">
+    <!-- Top Star -->
+    <polygon points="256,160 262,178 280,180 266,192 271,210 256,199 241,210 246,192 232,180 250,178" />
+    <!-- Left Star -->
+    <polygon points="190,240 196,258 214,260 200,272 205,290 190,279 175,290 180,272 166,260 184,258" />
+    <!-- Right Star -->
+    <polygon points="322,240 328,258 346,260 332,272 337,290 322,279 307,290 312,272 298,260 316,258" />
+    <!-- Bottom Star -->
+    <polygon points="256,310 262,328 280,330 266,342 271,360 256,349 241,360 246,342 232,330 250,328" />
+  </g>
+
+  <!-- Specular Highlight Curve -->
+  <path d="M 140 190 A 130 130 0 0 1 270 130" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity="0.65" fill="none" />
+</svg>

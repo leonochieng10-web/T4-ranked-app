@@ -1,0 +1,6 @@
+{
+  "name": "Tenkaichi 4 Ranked",
+  "description": "Real-time competitive ranked ladder, matchmaking simulator, and 60,000-player tournament tracking engine with weekly seasons for Tenkaichi 4 / Sparking! ZERO.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

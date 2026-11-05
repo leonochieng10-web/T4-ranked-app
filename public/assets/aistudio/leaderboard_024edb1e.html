@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tenkaichi 4 Ranked">
+<meta name="theme-color" content="#6c4cff">
+<title>Tenkaichi 4 Ranked</title>
+<style>
+:root{--bg:#f4f5f9;--card:#fff;--tx:#161a2b;--mut:#6b7188;--line:#e2e5ef;--acc:#6c4cff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1020;--card:#171a30;--tx:#eef0fb;--mut:#8f95b3;--line:#262a47;--acc:#8d74ff}}
+:root[data-theme="dark"]{--bg:#0e1020;--card:#171a30;--tx:#eef0fb;--mut:#8f95b3;--line:#262a47;--acc:#8d74ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:14px;max-width:640px;margin-inline:auto}
+h1{font-size:22px;margin:4px 0 2px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.me{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.me input{flex:1;min-width:110px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font-size:15px}
+button{background:var(--acc);color:#fff;border:0;border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;cursor:pointer}
+button.alt{background:var(--bg);color:var(--tx);border:1px solid var(--line)}
+button.tiny{padding:3px 8px;font-size:11px;font-weight:500;color:var(--mut)}
+.sr{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+#stime{font-weight:800;font-variant-numeric:tabular-nums}
+.sbar{height:8px;border-radius:99px;background:var(--bg);border:1px solid var(--line);margin:8px 0;overflow:hidden}
+.sfill{height:100%;width:0;background:linear-gradient(90deg,var(--acc),#ff6b9a);transition:width 1s linear}
+.tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;background:transparent;color:var(--mut);padding:9px 4px;font-size:13px}
+.tabs button.on{background:var(--acc);color:#fff}
+.mine{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:14px;position:relative}
+.mine b{font-size:18px}
+.badge{display:inline-block;min-width:52px;white-space:nowrap;text-align:center;padding:3px 8px;border-radius:7px;font-weight:800;font-size:13px;color:#fff}
+.tiers{display:flex;gap:8px 12px;flex-wrap:wrap;font-size:12px;color:var(--mut)}
+.tool{display:flex;gap:8px;margin-bottom:8px}
+.tool input{flex:1;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:14px;min-width:0}
+#list{height:52vh;overflow-y:auto;position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px}
+#spacer{position:relative}
+#glist{max-height:62vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.row{display:flex;align-items:center;gap:10px;padding:0 12px;height:48px;border-bottom:1px solid var(--line);font-size:14px}
+.row.abs{position:absolute;left:0;right:0}
+.row .n{width:64px;color:var(--mut);font-variant-numeric:tabular-nums}
+.row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .pt{font-variant-numeric:tabular-nums;font-weight:700}
+.row.you{background:color-mix(in srgb,var(--acc) 18%,transparent)}
+.fl{font-size:11px;margin-left:6px;color:#f97316;font-weight:700}
+.mv{font-size:11px;font-weight:700;margin-left:6px}.mv.up{color:#22a35a}.mv.dn{color:#e11d48}
+.fup{animation:fu 1.6s}.fdn{animation:fd 1.6s}
+@keyframes fu{0%,60%{background:rgba(34,163,90,.55)}}
+@keyframes fd{0%,60%{background:rgba(225,29,72,.5)}}
+.hr{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
+.hr:last-child{border:0}.hr .nm{flex:1}.hr small{color:var(--mut)}
+.grow{display:flex;align-items:center;gap:10px;margin-top:12px}
+.gauge{flex:1;height:18px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.gfill{height:100%;width:0;border-radius:99px;position:relative;overflow:hidden;transition:width .9s cubic-bezier(.2,.9,.3,1)}
+.gfill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-100%);animation:shm 1.8s infinite}
+@keyframes shm{to{transform:translateX(100%)}}
+.gtx{font-size:12px;color:var(--mut);margin-top:5px;font-variant-numeric:tabular-nums}
+.gbump{animation:gb .6s}
+@keyframes gb{0%,100%{transform:scale(1)}40%{transform:scale(1.04)}}
+.float{position:absolute;right:0;top:-8px;font-weight:800;font-size:26px;animation:fl 1.2s ease-out forwards;pointer-events:none}
+.float.g{color:#22a35a}.float.r{color:#e11d48}
+@keyframes fl{0%{opacity:0;transform:translateY(10px) scale(.6)}20%{opacity:1;transform:translateY(-6px) scale(1.2)}100%{opacity:0;transform:translateY(-50px)}}
+.shake{animation:sh .45s}
+@keyframes sh{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.glow{animation:gl .8s}
+@keyframes gl{0%{box-shadow:0 0 0 0 rgba(34,163,90,.7)}100%{box-shadow:0 0 0 22px rgba(34,163,90,0)}}
+.pop{display:inline-block;animation:pp .5s}
+@keyframes pp{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
+.spark{position:absolute;left:30px;top:6px;animation:sk 1s ease-out forwards;pointer-events:none}
+@keyframes sk{to{transform:translate(var(--x),var(--y));opacity:0}}
+#ru{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(0,0,0,.55),rgba(0,0,0,.88));animation:ruin .3s;color:#fff;overflow:hidden;cursor:pointer;text-align:center;padding:20px}
+#ru .rays{position:absolute;width:140vmax;height:140vmax;background:repeating-conic-gradient(rgba(255,255,255,.2) 0 6deg,transparent 6deg 18deg);-webkit-mask-image:radial-gradient(circle,#000,transparent 55%);mask-image:radial-gradient(circle,#000,transparent 55%);animation:spin 8s linear infinite}
+#ru .big{position:relative;font-size:90px;line-height:1.1;animation:bigin .9s cubic-bezier(.2,1.6,.4,1)}
+#ru .big b{display:block;font-size:56px;padding:6px 28px;border-radius:18px;margin-top:8px}
+#ru h2{position:relative;font-size:32px;letter-spacing:4px;margin:18px 0 4px;animation:ruttl .8s .3s both}
+#ru p{position:relative;margin:0;font-size:18px;animation:ruttl .8s .5s both}
+.conf{position:absolute;top:-20px;width:8px;height:14px;animation:cf linear forwards}
+@keyframes ruin{from{opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bigin{0%{transform:scale(0) rotate(-200deg);opacity:0}100%{transform:none;opacity:1}}
+@keyframes ruttl{from{opacity:0;transform:translateY(20px)}}
+@keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
+#msg{font-size:13px;color:var(--mut);min-height:18px;margin-top:6px}
+</style>
+</head>
+<body>
+<h1>Tenkaichi 4 Ranked</h1>
+<div class="sub">60,000 players · weekly seasons · E to Z rank</div>
+
+<div class="card">
+  <div class="sr"><b id="sname">Season</b><span id="stime">--</span></div>
+  <div class="sbar"><div class="sfill" id="sfill"></div></div>
+  <div class="sr"><span class="gtx" style="margin:0">Weekly reset · next ranking update in <b id="nxt">--</b></span><button class="alt tiny" id="tst">test reset</button></div>
+</div>
+
+<div class="tabs">
+  <button class="on" data-t="play">Play</button>
+  <button data-t="global">Global</button>
+  <button data-t="group">My Group</button>
+</div>
+
+<section id="tab-play">
+<div class="card" id="mycard">
+  <div class="me">
+    <input id="name" placeholder="Your name" maxlength="16" value="You">
+    <button id="win">I Won</button><button id="lose" class="alt">I Lost</button>
+  </div>
+  <div class="mine"><div><span id="mytier" class="badge">D</span> <b id="myrank">#1</b></div><div><b id="mypts">0</b> pts</div></div>
+  <div class="grow"><div class="gauge" id="gauge"><div class="gfill" id="gfill"></div></div><span class="badge" id="gnext">C</span></div>
+  <div class="gtx" id="gtx"></div>
+  <div class="gtx" id="stat"></div>
+  <div id="msg">Enter your result: each win or loss is 22 to 30 points at random. You only lose points from B rank and above.</div>
+</div>
+<div class="card"><b>🔥 Hottest win streaks right now</b><div id="hot" style="margin-top:6px"></div></div>
+</section>
+
+<section id="tab-global" hidden>
+<div class="card tiers" id="tiers"></div>
+<div class="tool">
+  <input id="q" type="search" placeholder="Search name or jump to rank #">
+  <button class="alt" id="top">Top</button>
+  <button class="alt" id="gome">Me</button>
+</div>
+<div id="list"><div id="spacer"></div></div>
+</section>
+
+<section id="tab-group" hidden>
+  <div class="card"><b>Your group</b><div class="sub" id="gsum" style="margin:4px 0 0"></div></div>
+  <div id="glist"></div>
+</section>
+
+<script>
+const N=60000,START=1000,LOSS_FROM=1500,MAXM=150,WEEK=6048e5,EPOCH=Date.UTC(2024,0,1),H=48;
+const TIERS=[["Z",3500,"#e11d48","🌌"],["SS",3000,"#f97316","🔥"],["S",2400,"#d4a017","👑"],["A",1900,"#22a35a","💎"],["B",1500,"#0ea5e9","⚔️"],["C",1200,"#6366f1","🛡️"],["D",800,"#8b5cf6","🔰"],["E",0,"#7d8399","🌱"]];
+const F=["Liam","Emma","Noah","Olivia","Ethan","Ava","Lucas","Mia","Mason","Sofia","Aiden","Zoe","Kai","Luna","Leo","Maya","Ryan","Nina","Omar","Aisha","Diego","Yuki","Ivan","Priya","Jin","Chloe","Ahmed","Elena","Tariq","Hana"];
+const L=["Kim","Silva","Khan","Lee","Cruz","Novak","Ali","Chen","Reyes","Moore","Tanaka","Patel","Costa","Ivanov","Smith","Okafor","Singh","Muller","Park","Diaz"];
+const $=id=>document.getElementById(id);
+function rnd(s){s=Math.imul(s^(s>>>15),2246822507);s=Math.imul(s^(s>>>13),3266489909);return ((s^(s>>>16))>>>0)/4294967296}
+function mb(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function nameAt(i){const h=Math.floor(rnd(i*3+1)*1e9),f=F[h%F.length],l=L[(h>>6)%L.length],n=(h>>11)%100,s=(h>>18)%5;
+  return s===0?f+l+n:s===1?"x"+f+"x":s===2?f.toLowerCase()+"."+l.toLowerCase():s===3?f+"_"+l[0]+n:f+" "+l}
+function tierP(p){for(const t of TIERS)if(p>=t[1])return t;return TIERS[7]}
+
+// players: pro (3%), good (15%), average (42%, some late bloomers), noobs (40%, few matches, some adjust)
+const pts=new Int32Array(N),st=new Int16Array(N),mc=new Uint16Array(N),wp=new Float32Array(N),act=new Float32Array(N),gr=new Float32Array(N),hot=new Uint8Array(N);
+for(let i=0;i<N;i++){
+  const u=rnd(i*7+13),r2=rnd(i*5+3);
+  if(u<.03){wp[i]=.78+.1*r2;act[i]=.85;hot[i]=1}
+  else if(u<.18){wp[i]=.58+.1*r2;act[i]=.55+.2*r2}
+  else if(u<.6){wp[i]=.46+.08*r2;act[i]=.25+.25*r2;if(rnd(i+99)<.3)gr[i]=.002}
+  else{wp[i]=.28+.1*r2;act[i]=.05+.12*r2;if(rnd(i+51)<.35)gr[i]=.01}
+}
+function playOne(i,rng){
+  const m=mc[i];
+  const w=Math.min(.95,wp[i]+Math.min(.2,gr[i]*Math.max(0,m-8))+(hot[i]?Math.min(.12,.03*st[i]):0));
+  const d=22+((rng()*9)|0);
+  if(rng()<w){pts[i]+=d;st[i]++}else{st[i]=0;if(pts[i]>=LOSS_FROM)pts[i]=Math.max(0,pts[i]-d)}
+  mc[i]=m+1;
+}
+const keys=new Int32Array(N);
+function resort(){for(let i=0;i<N;i++)keys[i]=pts[i]*65536+(65535-i);keys.sort();keys.reverse()}
+function rankFor(p){let lo=0,hi=N;while(lo<hi){const m=(lo+hi)>>1;if((keys[m]>>16)>=p)lo=m+1;else hi=m}return lo+1}
+
+let season=0,sStart=0,sEnd=0,shift=0;
+const now=()=>Date.now()+shift;
+function startSeason(){
+  season=Math.floor((now()-EPOCH)/WEEK);sStart=EPOCH+season*WEEK;sEnd=sStart+WEEK;
+  pts.fill(START);st.fill(0);mc.fill(0);
+  const f=(now()-sStart)/WEEK,rng=mb(season*7919+1);
+  for(let i=0;i<N;i++){const n=Math.floor(act[i]*MAXM*f*(.6+.8*rng()));for(let k=0;k<n;k++)playOne(i,rng)}
+  resort();
+  $("sname").textContent="Season "+season;
+}
+let me={name:"You",p:START,m:0,st:0};
+function save(){try{localStorage.setItem("t4r",JSON.stringify({s:season,p:me.p,n:me.name,m:me.m,st:me.st}))}catch(e){}}
+
+function overlay(inner,cols){
+  const old=$("ru");if(old)old.remove();
+  const o=document.createElement("div");o.id="ru";
+  o.innerHTML='<div class="rays"></div>'+inner;
+  for(let i=0;i<60;i++){
+    const c=document.createElement("i");c.className="conf";
+    c.style.left=Math.random()*100+"%";c.style.background=cols[i%cols.length];
+    c.style.animationDuration=(1.8+Math.random()*1.6)+"s";c.style.animationDelay=(Math.random()*.8)+"s";
+    o.appendChild(c);
+  }
+  document.body.appendChild(o);
+  const close=()=>{o.style.transition="opacity .4s";o.style.opacity=0;setTimeout(()=>o.remove(),400)};
+  o.onclick=close;setTimeout(close,3800);
+}
+function rankUp(a,b){
+  const ta=TIERS.find(t=>t[0]===a),tb=TIERS.find(t=>t[0]===b);
+  overlay('<div class="big">'+tb[3]+'<b style="background:'+tb[2]+'">'+tb[0]+'</b></div><h2>RANK UP!</h2><p>'+ta[0]+' \u2192 '+tb[0]+'</p>',[tb[2],ta[2],"#fff","#ffd54a","#ff6b9a"]);
+}
+function fx(win,d,up){
+  const m=document.querySelector(".mine"),c=$("mycard"),p=$("mypts");
+  const f=document.createElement("div");
+  f.className="float "+(win?"g":"r");
+  f.textContent=d?(win?"+":"\u2212")+d:"Safe!";
+  m.appendChild(f);setTimeout(()=>f.remove(),1300);
+  c.classList.remove("shake","glow");void c.offsetWidth;c.classList.add(win?"glow":"shake");
+  p.classList.remove("pop");void p.offsetWidth;p.classList.add("pop");
+  if(up)for(let i=0;i<16;i++){
+    const s=document.createElement("span"),a=Math.random()*6.28,r=50+Math.random()*60;
+    s.className="spark";s.textContent="\u2728";
+    s.style.setProperty("--x",Math.cos(a)*r+"px");s.style.setProperty("--y",Math.sin(a)*r+"px");
+    m.appendChild(s);setTimeout(()=>s.remove(),1100);
+  }
+}
+function play(win){
+  const d=22+Math.floor(Math.random()*9),bt=tierP(me.p),safe=!win&&me.p<LOSS_FROM;
+  me.p=Math.max(0,me.p+(win?d:safe?0:-d));me.m++;me.st=win?me.st+1:0;
+  const at=tierP(me.p),moved=at[0]!==bt[0];
+  updateMe();
+  $("msg").textContent=(win?"Victory! +"+d+" pts":safe?"Defeat, but no points lost below B rank":"Defeat. \u2212"+d+" pts")+(moved?" \u00b7 rank "+at[0]+(win?" unlocked!":" reached"):"");
+  fx(win,safe?0:d,win&&moved);
+  if(win&&moved)rankUp(bt[0],at[0]);
+}
+
+let prevR=null,lastMove=0,flashCls="";
+function rowHtml(rank,r,top,flash){
+  const isMe=rank===r;let nm,p,sk;
+  if(isMe){nm=me.name||"You";p=me.p;sk=me.st}
+  else{const k=keys[(rank>r?rank-1:rank)-1],id=65535-(k&65535);nm=nameAt(id);p=k>>16;sk=st[id]}
+  const t=tierP(p);
+  const fl=sk>=3?'<small class="fl">🔥'+sk+'</small>':"";
+  const mv=isMe&&lastMove?'<small class="mv '+(lastMove>0?"up":"dn")+'">'+(lastMove>0?"\u25b2":"\u25bc")+Math.abs(lastMove).toLocaleString()+"</small>":"";
+  const cls="row"+(top!=null?" abs":"")+(isMe?" you "+(flash||""):"");
+  return '<div class="'+cls+'"'+(top!=null?' style="top:'+top+'px"':"")+'><span class="n">#'+rank.toLocaleString()+'</span><span class="badge" style="background:'+t[2]+'">'+t[3]+" "+t[0]+'</span><span class="nm">'+(isMe?"\u2605 ":"")+nm+mv+fl+'</span><span class="pt">'+p.toLocaleString()+"</span></div>";
+}
+function updateGroup(tab){
+  const r=rankFor(me.p),G=100,start=Math.max(1,Math.min(r-50,N+2-G));
+  if(!tab){
+    if(prevR!==null&&r!==prevR){lastMove=prevR-r;flashCls=lastMove>0?"fup":"fdn"}else flashCls="";
+    prevR=r;
+  }
+  let h="";for(let k=0;k<G;k++)h+=rowHtml(start+k,r,null,flashCls);
+  const gl=$("glist");gl.innerHTML=h;
+  $("gsum").innerHTML="Ranks #"+start.toLocaleString()+" to #"+(start+G-1).toLocaleString()+" \u00b7 you are <b>"+(r-start+1)+"</b> of "+G+" in your group";
+  if(gl.clientHeight>0)gl.scrollTo({top:Math.max(0,(r-start)*H-gl.clientHeight/2+H/2),behavior:tab?"auto":"smooth"});
+}
+const list=$("list"),sp=$("spacer");let filter=null;
+function render(){
+  const cnt=filter?filter.length:N+1;sp.style.height=cnt*H+"px";
+  const a=Math.floor(list.scrollTop/H)-3,b=a+Math.ceil(list.clientHeight/H)+6,r=rankFor(me.p);
+  let h="";for(let k=Math.max(0,a);k<Math.min(cnt,b);k++)h+=rowHtml(filter?filter[k]:k+1,r,k*H);
+  sp.innerHTML=h;
+}
+function showTiers(){
+  const c=TIERS.map(()=>0);
+  for(let i=0;i<N;i++){let k=0;while(pts[i]<TIERS[k][1])k++;c[k]++}
+  $("tiers").innerHTML=TIERS.map((t,k)=>'<div><span class="badge" style="background:'+t[2]+'">'+t[3]+" "+t[0]+"</span> "+c[k].toLocaleString()+"</div>").join("");
+}
+function showHot(){
+  const top=[-1,-1,-1];
+  for(let i=0;i<N;i++){const s=st[i];
+    if(top[0]<0||s>st[top[0]]){top[2]=top[1];top[1]=top[0];top[0]=i}
+    else if(top[1]<0||s>st[top[1]]){top[2]=top[1];top[1]=i}
+    else if(top[2]<0||s>st[top[2]])top[2]=i}
+  $("hot").innerHTML=top.filter(i=>i>=0&&st[i]>0).map(i=>{const t=tierP(pts[i]);
+    return '<div class="hr"><span class="badge" style="background:'+t[2]+'">'+t[3]+" "+t[0]+'</span><span class="nm">'+nameAt(i)+'</span><b>🔥 '+st[i]+'</b><small>'+mc[i]+' games</small></div>'}).join("")||"<small>No streaks yet</small>";
+}
+let gv=0,gAnim;
+function updateGauge(){
+  const t=tierP(me.p),idx=TIERS.indexOf(t),nx=idx>0?TIERS[idx-1]:null;
+  const fill=$("gfill"),tx=$("gtx"),nb=$("gnext"),g=$("gauge");
+  if(nx){
+    fill.style.background="linear-gradient(90deg,"+t[2]+","+nx[2]+")";
+    fill.style.width=(Math.max(0,Math.min(1,(me.p-t[1])/(nx[1]-t[1])))*100)+"%";
+    nb.textContent=nx[3]+" "+nx[0];nb.style.background=nx[2];
+  }else{fill.style.background=t[2];fill.style.width="100%";nb.textContent="MAX";nb.style.background=t[2]}
+  g.classList.remove("gbump");void g.offsetWidth;g.classList.add("gbump");
+  cancelAnimationFrame(gAnim);
+  const from=gv,t0=performance.now();
+  const step=now=>{
+    const k=Math.min(1,(now-t0)/700);
+    gv=Math.round(from+(me.p-from)*k);
+    tx.textContent=gv.toLocaleString()+(nx?" / "+nx[1].toLocaleString()+" pts to rank "+nx[0]:" pts \u00b7 top rank reached");
+    if(k<1)gAnim=requestAnimationFrame(step);
+  };
+  gAnim=requestAnimationFrame(step);
+}
+function updateMe(){
+  const r=rankFor(me.p),t=tierP(me.p);
+  $("myrank").textContent="#"+r.toLocaleString();$("mypts").textContent=me.p.toLocaleString();
+  const b=$("mytier");b.textContent=t[3]+" "+t[0];b.style.background=t[2];
+  $("stat").textContent="Matches this season: "+me.m+" \u00b7 Win streak: "+me.st;
+  updateGauge();updateGroup();save();
+}
+function updateRank(){
+  $("myrank").textContent="#"+rankFor(me.p).toLocaleString();
+  updateGroup();
+  if(!$("tab-global").hidden){render();showTiers()}
+  if(!$("tab-play").hidden)showHot();
+}
+let nextAt=Date.now()+270000;
+function schedule(){nextAt=Date.now()+240000+Math.random()*60000}
+function live(){
+  for(let i=0;i<N;i++)if(Math.random()<act[i]*.15&&mc[i]<MAXM*act[i]*1.3+5)playOne(i,Math.random);
+  resort();updateRank();
+}
+function endSeason(){
+  const r=rankFor(me.p),t=tierP(me.p);
+  startSeason();me={name:me.name,p:START,m:0,st:0};prevR=null;lastMove=0;flashCls="";
+  overlay('<div class="big">'+t[3]+'<b style="background:'+t[2]+'">'+t[0]+'</b></div><h2>SEASON RESET</h2><p>Final rank #'+r.toLocaleString()+'<br>Everyone starts again at D</p>',[t[2],"#fff","#ffd54a","#8b5cf6"]);
+  gv=0;updateMe();render();showTiers();showHot();
+}
+function tickTimer(){
+  const left=sEnd-now();
+  if(left<=0){endSeason();return}
+  const p2=x=>String(x).padStart(2,"0");
+  $("stime").textContent=Math.floor(left/864e5)+"d "+p2(Math.floor(left%864e5/36e5))+":"+p2(Math.floor(left%36e5/6e4))+":"+p2(Math.floor(left%6e4/1e3));
+  $("sfill").style.width=((1-left/WEEK)*100)+"%";
+  const w=nextAt-Date.now();
+  if(w<=0){live();schedule()}
+  else $("nxt").textContent=Math.floor(w/6e4)+":"+p2(Math.floor(w%6e4/1e3));
+}
+
+$("win").onclick=()=>play(true);$("lose").onclick=()=>play(false);
+$("tst").onclick=()=>{shift+=sEnd-now()-5000;tickTimer()};
+$("name").oninput=e=>{me.name=e.target.value;render();updateGroup(true);save()};
+list.onscroll=render;
+$("top").onclick=()=>{$("q").value="";filter=null;list.scrollTop=0;render()};
+$("gome").onclick=()=>{$("q").value="";filter=null;render();list.scrollTop=(rankFor(me.p)-1)*H-H*2;render()};
+$("q").oninput=e=>{
+  const v=e.target.value.trim().toLowerCase();
+  if(!v){filter=null;render();return}
+  if(/^#?\d+$/.test(v)){const r=Math.min(N+1,Math.max(1,+v.replace("#","")));filter=null;render();list.scrollTop=(r-1)*H;render();return}
+  const res=[],r=rankFor(me.p);
+  for(let k=1;k<=N+1&&res.length<200;k++){
+    const nm=k===r?(me.name||"You"):nameAt(65535-(keys[(k>r?k-1:k)-1]&65535));
+    if(nm.toLowerCase().includes(v))res.push(k);
+  }
+  filter=res;list.scrollTop=0;render();
+};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  for(const id of ["play","global","group"])$("tab-"+id).hidden=id!==b.dataset.t;
+  if(b.dataset.t==="global"){render();showTiers()}
+  if(b.dataset.t==="group")updateGroup(true);
+  if(b.dataset.t==="play")showHot();
+});
+
+startSeason();
+try{const s=JSON.parse(localStorage.getItem("t4r")||"null");if(s&&s.s===season){me={name:s.n,p:s.p,m:s.m,st:s.st};$("name").value=s.n}}catch(e){}
+gv=me.p;updateMe();showTiers();showHot();render();tickTimer();
+setInterval(tickTimer,1000);
+</script>
+</body>
+</html>
